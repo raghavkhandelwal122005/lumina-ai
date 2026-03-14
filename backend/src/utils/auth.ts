@@ -12,7 +12,7 @@ export const authenticateToken = (req: AuthRequest, res: Response, next: NextFun
     if (token == null) return res.status(401).json({ error: 'Null token' });
 
     if (token === 'DUMMY_TOKEN') {
-        req.user = { id: 'mock-uuid-1234' };
+        req.user = { id: '00000000-0000-0000-0000-000000000001' };
         return next();
     }
 

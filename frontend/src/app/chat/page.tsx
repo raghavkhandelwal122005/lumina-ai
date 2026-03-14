@@ -166,7 +166,7 @@ export default function ChatPage() {
         setIsTyping(true);
 
         const formData = new FormData();
-        formData.append('file', file);
+        formData.append('image', file);
 
         try {
             const response = await fetch('http://localhost:5000/api/upload', {
@@ -284,7 +284,7 @@ export default function ChatPage() {
                 </div>
             </div>
 
-            <div className="flex-1 flex flex-col h-screen overflow-hidden bg-[url('/chat-bg-pattern-placeholder.png')] bg-repeat relative">
+            <div className="flex-1 flex flex-col h-screen overflow-hidden bg-slate-50 relative">
 
                 {/* Mobile Header (Shows when Sidebar is hidden) */}
                 <div className="md:hidden bg-white p-4 border-b border-slate-200 flex justify-between items-center z-10 shadow-sm">
