@@ -24,6 +24,7 @@ interface DoctorState {
     setActivePatient: (id: string) => void;
     getActivePatient: () => Patient | null;
     addPatient: (patient: Patient) => void;
+    deletePatient: (id: string) => void;
 }
 
 const initialPatients: Patient[] = [
@@ -109,6 +110,13 @@ export const useDoctorStore = create<DoctorState>((set, get) => ({
     addPatient: (patient: Patient) => {
         set((state) => ({
             patients: [patient, ...state.patients]
+        }));
+    },
+    deletePatient: (id: string) => {
+        set((state) => ({
+            patients: state.patients.filter((p) => p.id !== id),
+            // If the active patient is deleted, clear active patient ID
+            activePatientId: state.activePatientId === id ? null : state.activePatientId
         }));
     }
 }));

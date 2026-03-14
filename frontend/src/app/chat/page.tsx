@@ -224,7 +224,9 @@ export default function ChatPage() {
         setActiveSessionId(null);
     };
 
-    const activePatient = useDoctorStore(state => state.getActivePatient());
+    const activePatientId = useDoctorStore(state => state.activePatientId);
+    const patients = useDoctorStore(state => state.patients);
+    const activePatient = patients.find(p => p.id === activePatientId) || null;
 
     return (
         <div className="flex min-h-screen bg-[#F8FAFC]">

@@ -2,7 +2,7 @@
 import DashboardLayout from '../../components/DashboardLayout';
 import { useDoctorStore } from '../../store/useDoctorStore';
 import { useRouter } from 'next/navigation';
-import { Search, Users, Activity, AlertTriangle, CheckCircle, Plus, X } from 'lucide-react';
+import { Search, Users, Activity, AlertTriangle, CheckCircle, Plus, X, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
 export default function DoctorDashboard() {
@@ -161,12 +161,13 @@ export default function DoctorDashboard() {
                                     <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-widest">Age</th>
                                     <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-widest">Last Visit</th>
                                     <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-widest">Status</th>
+                                    <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-widest text-right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {filteredPatients.length === 0 ? (
                                     <tr>
-                                        <td colSpan={5} className="py-8 text-center text-slate-400 font-medium">
+                                        <td colSpan={6} className="py-8 text-center text-slate-400 font-medium">
                                             No patients found.
                                         </td>
                                     </tr>
@@ -206,6 +207,19 @@ export default function DoctorDashboard() {
                                                     {getStatusIcon(patient.status)}
                                                     {patient.status}
                                                 </span>
+                                            </td>
+                                            <td className="py-4 px-6 text-right">
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        if (confirm('Are you sure you want to delete this patient?')) {
+                                                            useDoctorStore.getState().deletePatient(patient.id);
+                                                        }
+                                                    }}
+                                                    className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
                                             </td>
                                         </tr>
                                     ))

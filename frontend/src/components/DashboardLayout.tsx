@@ -2,7 +2,11 @@ import Sidebar from './Sidebar';
 import { useDoctorStore } from '../store/useDoctorStore';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-    const activePatient = useDoctorStore(state => state.getActivePatient());
+    const activePatientId = useDoctorStore(state => state.activePatientId);
+    const patients = useDoctorStore(state => state.patients);
+    const setActivePatient = useDoctorStore(state => state.setActivePatient);
+    
+    const activePatient = patients.find(p => p.id === activePatientId) || null;
 
     return (
         <div className="flex min-h-screen bg-[#F8FAFC]">
@@ -19,9 +23,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                 <select 
                                     className="bg-blue-50 border border-blue-100 text-[#25418F] font-bold text-sm py-1 pl-2 pr-6 rounded-r-full focus:outline-none appearance-none cursor-pointer"
                                     value={activePatient.id}
-                                    onChange={(e) => useDoctorStore.getState().setActivePatient(e.target.value)}
+                                    onChange={(e) => setActivePatient(e.target.value)}
                                 >
-                                    {useDoctorStore.getState().patients.map(p => (
+                                    {patients.map(p => (
                                         <option key={p.id} value={p.id}>{p.name} (Age {p.age})</option>
                                     ))}
                                 </select>
