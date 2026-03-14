@@ -2,10 +2,12 @@
 import DashboardLayout from '../../components/DashboardLayout';
 import { Activity, Thermometer, Clock, AlertTriangle, Plus, X, Heart, Droplet, Zap } from 'lucide-react';
 import { useHealthStore } from '../../store/useHealthStore';
+import { useDoctorStore } from '../../store/useDoctorStore';
 import { useState } from 'react';
 
 export default function LogsPage() {
     const { vitals, logs, addLog, updateVitals } = useHealthStore();
+    const activePatient = useDoctorStore(state => state.getActivePatient());
     const [isAddLogOpen, setIsAddLogOpen] = useState(false);
     const [logType, setLogType] = useState<'Vitals' | 'Symptoms'>('Vitals');
     const [filter, setFilter] = useState<'All' | 'Vitals' | 'Symptoms'>('All');
@@ -224,6 +226,27 @@ export default function LogsPage() {
                         </div>
 
                         <form onSubmit={handleSubmit} className="p-8 space-y-6">
+                            {activePatient && (
+                                <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 flex items-center justify-between shadow-sm">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#25418F] font-bold overflow-hidden shrink-0 border border-blue-200 shadow-sm">
+                                            {activePatient.avatarUrl ? (
+                                                <img src={activePatient.avatarUrl} alt={activePatient.name} className="w-full h-full object-cover" />
+                                            ) : (
+                                                activePatient.name.charAt(0)
+                                            )}
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-extrabold text-[#25418F] uppercase tracking-widest leading-tight mb-0.5 mt-0.5">Logging For Patient</p>
+                                            <p className="font-bold text-slate-800 text-sm">{activePatient.name} <span className="text-slate-500 font-medium ml-1">| Age {activePatient.age} | {activePatient.status}</span></p>
+                                        </div>
+                                    </div>
+                                    <div className="hidden sm:block text-xs font-mono font-bold text-slate-400 bg-white px-2 py-1 rounded-md border border-slate-200">
+                                        #{activePatient.id.toUpperCase()}
+                                    </div>
+                                </div>
+                            )}
+
                             <div>
                                 <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Log Type</label>
                                 <div className="flex gap-4">
