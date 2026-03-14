@@ -12,7 +12,8 @@ const Sidebar = () => {
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
     const menu = [
-        { name: 'Dashboard', icon: LayoutDashboard, href: '/dashboard' },
+        { name: 'Doctor Dashboard', icon: LayoutDashboard, href: '/doctor-dashboard' },
+        { name: 'Patient Overview', icon: LayoutDashboard, href: '/dashboard' },
         { name: 'Symptom Checker', icon: Stethoscope, href: '/symptom-checker' },
         { name: 'AI Chat Assistant', icon: MessageSquare, href: '/chat' },
         { name: 'Health Logs', icon: ScrollText, href: '/logs' },

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useHealthStore } from '../../store/useHealthStore';
 import { useChatStore, ChatSession } from '../../store/useChatStore';
+import { useDoctorStore } from '../../store/useDoctorStore';
 
 interface Message {
     id: string;
@@ -223,14 +224,24 @@ export default function ChatPage() {
         setActiveSessionId(null);
     };
 
+    const activePatient = useDoctorStore(state => state.getActivePatient());
+
     return (
         <div className="flex min-h-screen bg-[#F8FAFC]">
             {/* Custom Sidebar for Chat */}
             <div className="w-64 min-h-screen bg-white border-r border-slate-200 flex flex-col justify-between p-6 shrink-0 z-10 hidden md:flex">
                 <div>
-                    <button onClick={resetChat} className="w-full bg-[#25418F] text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-md hover:bg-blue-800 transition mb-8">
+                    <button onClick={resetChat} className="w-full bg-[#25418F] text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-md hover:bg-blue-800 transition mb-6">
                         <Plus size={18} /> New Consultation
                     </button>
+
+                    {activePatient && (
+                        <div className="mb-6 p-4 rounded-xl border border-[#25418F] bg-blue-50">
+                            <h4 className="text-[10px] font-extrabold text-[#25418F] tracking-widest uppercase mb-1">Current Patient</h4>
+                            <div className="text-sm font-bold text-slate-800">{activePatient.name}</div>
+                            <div className="text-xs font-semibold text-slate-500">Age {activePatient.age}</div>
+                        </div>
+                    )}
 
                     <h4 className="text-[10px] font-extrabold text-slate-400 tracking-widest uppercase mb-4">Recent Chats</h4>
                     <div className="space-y-2 mb-8 max-h-48 overflow-y-auto pr-1">
