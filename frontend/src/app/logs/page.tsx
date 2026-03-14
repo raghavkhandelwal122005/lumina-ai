@@ -47,11 +47,43 @@ export default function LogsPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // 1. Prepare data for backend
+        // 1. Always update local store first (no backend dependency)
+        let newVitals: any = {};
+        if (logType === 'Vitals') {
+            const riskScore = computeRiskScore(hr, bpSys, bpDia, sugar);
+            newVitals = {
+                bloodPressureSys: bpSys,
+                bloodPressureDia: bpDia,
+                restingHeartRate: hr,
+                sugarLevel: sugar,
+                weight: weight,
+                healthRiskScore: riskScore,
+            };
+            updateVitals(newVitals);
+        }
+
+        const notes = description || (logType === 'Vitals' ? 'Routine vitals check' : 'General symptom update');
+
+        addLog({
+            type: logType,
+            description: notes,
+            vitals: newVitals
+        });
+
+        // 2. Close modal and reset state immediately
+        setIsAddLogOpen(false);
+        setDescription('');
+        setSugar('');
+        setWeight('');
+        setBpSys('');
+        setBpDia('');
+        setHr('');
+
+        // 3. Fire-and-forget backend save (does not block the UI)
         const payload = {
             type: logType,
             symptoms: logType === 'Symptoms' ? description : '',
-            notes: description || (logType === 'Vitals' ? 'Routine vitals check' : 'General symptom update'),
+            notes,
             bp_sys: logType === 'Vitals' ? bpSys : null,
             bp_dia: logType === 'Vitals' ? bpDia : null,
             heart_rate: logType === 'Vitals' ? hr : null,
@@ -59,52 +91,16 @@ export default function LogsPage() {
             weight: logType === 'Vitals' ? weight : null,
         };
 
-        try {
-            // 2. Send to backend
-            const response = await fetch('http://localhost:5000/api/logs', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer DUMMY_TOKEN' // Auth mock
-                },
-                body: JSON.stringify(payload)
-            });
-
-            if (response.ok) {
-                // 3. Update local global store
-                let newVitals: any = {};
-                if (logType === 'Vitals') {
-                    const riskScore = computeRiskScore(hr, bpSys, bpDia, sugar);
-                    newVitals = {
-                        bloodPressureSys: bpSys,
-                        bloodPressureDia: bpDia,
-                        restingHeartRate: hr,
-                        sugarLevel: sugar,
-                        weight: weight,
-                        healthRiskScore: riskScore, // 🔥 Live update dashboard score
-                    };
-                    updateVitals(newVitals);
-                }
-
-                addLog({
-                    type: logType,
-                    description: payload.notes,
-                    vitals: newVitals
-                });
-
-                setIsAddLogOpen(false);
-                setDescription('');
-                setSugar('');
-                setWeight('');
-                setBpSys('');
-                setBpDia('');
-                setHr('');
-            } else {
-                console.error("Failed to save log to backend.");
-            }
-        } catch (error) {
-            console.error("Error saving log:", error);
-        }
+        fetch('http://localhost:5000/api/logs', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer DUMMY_TOKEN'
+            },
+            body: JSON.stringify(payload)
+        }).catch(() => {
+            // Silently ignore backend errors — local store is the source of truth
+        });
     };
 
     const filteredLogs = logs.filter(log => filter === 'All' || log.type === filter);
