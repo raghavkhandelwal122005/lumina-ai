@@ -5,7 +5,6 @@ import authRoutes from './routes/auth';
 import symptomRoutes from './routes/symptoms';
 import logRoutes from './routes/logs';
 import chatRoutes from './routes/chat';
-import reportRoutes from './routes/reports';
 import uploadRoutes from './routes/upload';
 import suggestionRoutes from './routes/suggestions';
 import dns from 'dns';
@@ -29,7 +28,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/symptoms', symptomRoutes);
 app.use('/api/logs', logRoutes);
 app.use('/api/chat', chatRoutes);
-app.use('/api/reports', reportRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/suggestions', suggestionRoutes);
 

@@ -11,6 +11,7 @@ export const chatWithAI = async (req: AuthRequest, res: Response) => {
     try {
         const { message, recentVitals } = req.body;
         const userId = req.user?.id || 'Unknown';
+        console.log(`[Chat] Fetching history and reports for User: ${userId}`);
 
         // 1. Retrieve the last 6 messages for context
         const historyResult = await pool.query(
@@ -23,7 +24,10 @@ export const chatWithAI = async (req: AuthRequest, res: Response) => {
             conversationHistory += `${row.role === 'user' ? 'Patient' : 'Aura'}: ${row.content}\n`;
         });
 
-        // 2. Call the Python AI service for chat response
+        let reportContext = "";
+        console.log(`[Chat] History context fetched.`);
+
+        // 3. Call the Python AI service for chat response
         let botResponseText = "I apologize, but I could not generate a response at this time.";
 
         try {
@@ -32,6 +36,7 @@ export const chatWithAI = async (req: AuthRequest, res: Response) => {
                 patient_name: "Patient",
                 recent_vitals: recentVitals || {},
                 conversation_history: conversationHistory,
+                report_context: ""
             }, { timeout: 30000 });
 
             botResponseText = aiResponse.data.response;

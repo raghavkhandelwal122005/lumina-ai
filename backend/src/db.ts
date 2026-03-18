@@ -1,5 +1,7 @@
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
+import fs from 'fs';
+import path from 'path';
 dotenv.config();
 
 // Mock database interactions if no local postgres is running
@@ -55,9 +57,25 @@ export const initDb = async () => {
 
   const client = await pool.connect();
   try {
-    console.log("Postgres connected.");
-  } catch (err) {
-    console.error('Database initialization error', err);
+    console.log("Postgres connected. Checking if schema initialization is needed...");
+    
+    const tableCheck = await client.query("SELECT 1 FROM information_schema.tables WHERE table_name = 'users' LIMIT 1");
+    
+    if (tableCheck.rows.length === 0) {
+        console.log("Schema not found. Initializing...");
+        const schemaPath = path.join(__dirname, '../../backups/health-care-ai-main/database_schema.sql');
+        if (fs.existsSync(schemaPath)) {
+            const schema = fs.readFileSync(schemaPath, 'utf8');
+            await client.query(schema);
+            console.log("Database schema initialized successfully.");
+        } else {
+            console.warn("Schema file not found at:", schemaPath);
+        }
+    } else {
+        console.log("Database schema already exists. Skipping initialization.");
+    }
+  } catch (err: any) {
+    console.error('Database initialization error:', err.message);
   } finally {
     client.release();
   }
